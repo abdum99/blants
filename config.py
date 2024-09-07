@@ -1,0 +1,28 @@
+# WIFI
+WIFI_SSID = "BLANTS-01"
+WIFI_PASSWORD = "esp8266-1234"
+
+# MQTT
+MQTT_CLIENT_ID = 'blants_01'
+MQTT_BROKER_HOST = 'osiris.local'
+MQTT_PORT = 1883
+MQTT_USER = None
+MQTT_Password = None
+
+# BLANTS
+SERVER_TIMEOUT = 300
+
+MOISTURE_LEVEL_DRY = 60000
+MOISTURE_LEVEL_LIQUID = 30000
+MOISTURE_LEVEL_MIN_THRES = 20
+MOISTURE_LEVEL_MAX_THRES = 40
+
+# in seconds how long to keep water pump 
+WATER_PUMP_WATER_PERIOD_SEC = 2
+# seconds to sleep before checking moisture when watering
+WATER_PUMP_SLEEP_PERIOD_SEC = 10
+
+# period blants will sleep between checks
+BLANTS_SLEEP_PERIOD_MSEC = 30000
+
+BLANTS_DEEPSLEEP_PERIOD_MSEC = 3600000000 # 1hr

@@ -8,7 +8,7 @@ class Board:
     def __init__(self, board: string):
         if board == 'nodemcu_esp8266':
             print("configuring", board)
-            self.ON_BOARD_LED_PIN = Pin(16, Pin.OUT)
+            self.ON_BOARD_LED_PIN = Pin(2, Pin.OUT)
             self.ANALOG_PIN = ADC(0)
         elif board == 'pico_rp2':
             print("configuring", board)

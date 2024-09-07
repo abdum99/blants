@@ -1,10 +1,10 @@
-from machine import ADC, Pin
+import machine
 from time import sleep
 from board import Board, NODEMCU_ESP8266 
 import sys
 # from umqtt.simple import MQTTClient
 
-from config import MOISTURE_LEVEL_LIQUID, MOISTURE_LEVEL_DRY, MOISTURE_LEVEL_MIN_THRES, MOISTURE_LEVEL_MAX_THRES 
+from config import MOISTURE_LEVEL_LIQUID, MOISTURE_LEVEL_DRY, MOISTURE_LEVEL_MIN_THRES, MOISTURE_LEVEL_MAX_THRES, BLANTS_SLEEP_PERIOD_MSEC, WATER_PUMP_SLEEP_PERIOD
 
 
 def should_water(measurement):
@@ -16,6 +16,10 @@ class Blants:
         self.board = Board(NODEMCU_ESP8266)
         self.adc = self.board.ANALOG_PIN
         self.led = self.board.ON_BOARD_LED_PIN
+
+        #configure RTC.ALARM0 to be able to wake the device
+        self.rtc = machine.RTC()
+        self.rtc.irq(trigger=self.rtc.ALARM0, wake=machine.DEEPSLEEP)
 
     #     self._setup()
         self._do_prechecks()
@@ -43,16 +47,20 @@ class Blants:
 
         return True
 
+    def blink(self):
+        self.led.on()
+        sleep(0.2)
+        self.led.off()
+        sleep(0.2)
+
+
     def measure_moisture(self):
         measurements = []
         for _ in range(5):
             val = self.adc.read_u16()
             print("val:", val)
             measurements.append(val)
-            self.led.on()
-            sleep(0.5)
-            self.led.off()
-            sleep(0.5)
+            self.blink()
 
         raw_val = sum(measurements) / len(measurements)
 
@@ -66,7 +74,7 @@ class Blants:
             print("watering; water pump on")
             sleep(1)
             print("water pump off")
-            sleep(config.WATER_PUMP_SLEEP_PERIOD)
+            sleep(WATER_PUMP_SLEEP_PERIOD)
 
 
     def run(self):
@@ -80,7 +88,11 @@ class Blants:
                 continue
 
             print("going into deep sleep")
-            sleep(config.BLANTS_SLEEP_PERIOD)
+            #put the device to sleep
+            # set RTC.ALARM0 to fire after Xmilliseconds, waking the device
+            self.rtc.alarm(self.rtc.ALARM0, BLANTS_SLEEP_PERIOD_MSEC)
+            machine.deepsleep()
+
 
 if __name__ == '__main__':
     blants = Blants()

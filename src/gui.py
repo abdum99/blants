@@ -1,9 +1,20 @@
 import framebuf
 from display import Display
 
-class Emoji:
-    def __init__(self, dat):
-        self.data = dat
+class MonoData:
+    def __init__(self, file):
+        self.file = file
+
+    def get_framebuf(self):
+        # calls __exit__ (.close() for file)
+        with open(self.file, 'rb') as mono_bytes:
+            return framebuf.FrameBuffer(bytearray(mono_bytes.read()), self.width, self.height, framebuf.MONO_HLSB)
+
+class Emoji(MonoData):
+    width = 128
+    height = 80
+    def __init__(self, data):
+        super().__init__(data)
 
     def Good():
         return Emoji("good.dat")
@@ -19,6 +30,15 @@ class Emoji:
 
     def Sleepy():
         return Emoji("sleepy.dat")
+
+class Picture(MonoData):
+    width = 296
+    height = 128
+    def __init__(self, data):
+        super().__init__(data)
+
+    def Kanagawa():
+        return Picture("kanagawa.dat")
 
 
 def map_point(val, s_min, s_max, t_min, t_max):
@@ -44,13 +64,12 @@ class BlantsGui:
     def __init__(self, disp: Display):
         self.disp = disp
 
-    def _emoji(self, em):
+    def _emoji(self, em: Emoji):
         if not isinstance(em, Emoji):
             raise Exception("bad emoji")
 
-        with open(em.data, 'rb') as em_bytes:
-            em_buf = framebuf.FrameBuffer(bytearray(em_bytes.read()), 128, 80, framebuf.MONO_HLSB)
-            self.disp.blit(em_buf, EMOJI_START_X, EMOJI_START_Y)
+        em_fb = em.get_framebuf()
+        self.disp.blit(em_fb, EMOJI_START_X, EMOJI_START_Y)
 
     def _clear_right_side(self):
         # clear area
@@ -146,3 +165,36 @@ class BlantsGui:
             self._graph(data_points, label=graph_label)
 
         self.disp.show()
+
+
+    def fill(self, pic: Picture):
+        pic_buf = pic.get_framebuf()
+        self.disp.blit(pic_buf, 0, 0)
+        self.disp.show()
+
+    WAKE_UP_CONFUSED_TEXTS = [
+        "That was a weird dream",
+        "Is it thirsty o’clock yet?",
+        "Agh..\nWaking up to check the dirt drama",
+        "Why am I awake?\nOh yeah, soil check.",
+    ]
+
+    WAKE_UP_ALERT_TEXTS = [
+        "Moisture detective, on the case!",
+        "Water you up to, soil?",
+        "Time to snoop on your soil!",
+        "Dirt report:\nmoist, dry, or fabulous?",
+    ]
+    def wake_up(self):
+        self.render(
+            topbar=f"netw:blants01  ip:192.168.4.1:8266",
+            emoji=Emoji.Confused(),
+            text=""
+        )
+
+
+
+
+
+
+

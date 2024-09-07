@@ -1,7 +1,7 @@
 import machine
 import esp
 from time import sleep
-from board import Board, NODEMCU_ESP8266 
+from board import Board, WEMOS_D1MINI_ESP8266 
 import sys
 # from umqtt.simple import MQTTClient
 
@@ -14,7 +14,7 @@ def should_water(measurement):
 
 class Blants:
     def __init__(self):
-        self.board = Board(NODEMCU_ESP8266)
+        self.board = Board(WEMOS_D1MINI_ESP8266)
         self.adc = self.board.ANALOG_PIN
         self.led = self.board.ON_BOARD_LED_PIN
 

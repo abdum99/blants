@@ -35,6 +35,7 @@ TOP_BAR_LINE_Y = 20
 EMOJI_START_X = 5
 EMOJI_START_Y = 40
 TEXT_START_X = 150
+TEXT_START_Y = 50
 GRAPH_START_X = 150
 GRAPH_END_X = 290
 GRAPH_START_Y = 35
@@ -51,12 +52,23 @@ class BlantsGui:
             em_buf = framebuf.FrameBuffer(bytearray(em_bytes.read()), 128, 80, framebuf.MONO_HLSB)
             self.disp.blit(em_buf, EMOJI_START_X, EMOJI_START_Y)
 
+    def _clear_right_side(self):
+        # clear area
+        self.disp.rect(
+            GRAPH_START_X,
+            GRAPH_START_Y,
+            GRAPH_END_X - GRAPH_START_X,
+            GRAPH_END_Y - GRAPH_START_Y + 15, # +15 to clear label
+            COLOR_WHITE,
+            True
+        )
+
     def _graph(self, points, label=None, display_last=True, min=0, max=100):
         graph_width = GRAPH_END_X - GRAPH_START_X
         graph_height = GRAPH_END_Y - GRAPH_START_Y
 
         # clear area
-        self.disp.rect(GRAPH_START_X, GRAPH_START_Y, graph_width, graph_height, COLOR_WHITE, True)
+        self._clear_right_side()
 
         # borders
         self.disp.rect(GRAPH_START_X, GRAPH_START_Y, graph_width, graph_height, COLOR_BLACK)
@@ -87,13 +99,37 @@ class BlantsGui:
             # horizontal centering
             # assuming each letter is 8 pixels
             # num_letters * 8 / 2
-            self.disp.text(label, GRAPH_START_X + (graph_width // 2) - (len(label) * 4), GRAPH_END_Y + 5, COLOR_BLACK)
+            self.disp.text(
+                label,
+                GRAPH_START_X + (graph_width // 2) - (len(label) * 4),
+                GRAPH_END_Y + 5,
+                COLOR_BLACK
+            )
 
-    # TODO: Add more stuff here (e.g. widget to display moisture in a corner somewhere)
+    def _text(self, text):
+        lines = text.splitlines()
+        if len(lines) > 5:
+            raise Exception("too many lines")
+
+        # clear area
+        self._clear_right_side()
+        # display text
+        y_padding = 0
+        for l in lines:
+            if len(l) > 24:
+                raise Exception("line too long")
+
+            self.disp.text(l, TEXT_START_X, TEXT_START_Y + y_padding, COLOR_BLACK)
+            y_padding += 10
+
+
+    # either text or data_points
+    # if both are provided, only text will be displayed
     def render(
         self,
         topbar=None,
         emoji=None,
+        text=None,
         data_points=None,
         graph_label=None,
     ):
@@ -104,7 +140,9 @@ class BlantsGui:
             self.disp.hline(0, TOP_BAR_LINE_Y, self.disp.dims()[1] - 1, COLOR_BLACK)
             self.disp.text(topbar, TOP_BAR_TEXT_START_X, TOP_BAR_TEXT_Y, COLOR_BLACK)
 
-        if data_points != None:
+        if text != None:
+            self._text(text)
+        elif data_points != None:
             self._graph(data_points, label=graph_label)
 
         self.disp.show()

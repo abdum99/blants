@@ -22,10 +22,14 @@ if __name__ == '__main__':
     #     emoji=Emoji.Good(),
     #     data_points=sample_points,
     # )
-    sleep(5)
     gui.render(
         emoji=Emoji.Sleepy(),
-        topbar="sleeping since 8:12pm 8/31/2024",
+        topbar="sleepin since 8:12pm 8/31/2024",
         data_points=sample_points_2,
         graph_label="Last 24 hours",
+    )
+    sleep(5)
+    gui.render(
+        emoji=Emoji.Good(),
+        text="doin' juuust fine"
     )

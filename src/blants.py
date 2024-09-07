@@ -5,7 +5,9 @@ from board import Board, WEMOS_D1MINI_ESP8266
 import sys
 # from umqtt.simple import MQTTClient
 
-from config import MOISTURE_LEVEL_LIQUID, MOISTURE_LEVEL_DRY, MOISTURE_LEVEL_MIN_THRES, MOISTURE_LEVEL_MAX_THRES, BLANTS_SLEEP_PERIOD_MSEC, WATER_PUMP_SLEEP_PERIOD_SEC, WATER_PUMP_WATER_PERIOD_SEC, BLANTS_DEEPSLEEP_PERIOD_MSEC 
+from config import MOISTURE_LEVEL_LIQUID, MOISTURE_LEVEL_DRY, MOISTURE_LEVEL_MIN_THRES, MOISTURE_LEVEL_MAX_THRES, BLANTS_SLEEP_PERIOD_MSEC, WATER_PUMP_SLEEP_PERIOD_SEC, WATER_PUMP_WATER_PERIOD_SEC, BLANTS_DEEPSLEEP_PERIOD_MSEC
+from src.display import create_display
+from src.gui import BlantsGui 
 
 
 def should_water(measurement):
@@ -13,8 +15,11 @@ def should_water(measurement):
 
 
 class Blants:
-    def __init__(self):
-        self.board = Board(WEMOS_D1MINI_ESP8266)
+    def __init__(self, board, display):
+        self.board = Board(board)
+        self.disp = create_display(display, self.board)
+        self.gui = BlantsGui(self.disp)
+
         self.adc = self.board.ANALOG_PIN
         self.led = self.board.ON_BOARD_LED_PIN
 

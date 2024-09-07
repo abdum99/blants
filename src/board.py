@@ -16,9 +16,9 @@ class Board:
     DC_PIN = None
     RST_PIN = None
     BUSY_PIN = None
-    def __init__(self, board):
-        print("configuring", board)
-        if board == WEMOS_D1MINI_ESP8266:
+    def __init__(self, board_name):
+        print("configuring", board_name)
+        if board_name == WEMOS_D1MINI_ESP8266:
             self.ON_BOARD_LED_PIN = Pin(2, Pin.OUT)
             self.ANALOG_PIN = ADC(0)
             # self.WATER_PUMP_PIN = Pin(4, Pin.OUT)
@@ -31,7 +31,7 @@ class Board:
             # self.RST_PIN = Pin(3, Pin.OUT)
             # self.BUSY_PIN = Pin(5, Pin.IN)
             raise "Need more config"
-        elif board == NODEMCU_ESP32:
+        elif board_name == NODEMCU_ESP32:
             self.ON_BOARD_LED_PIN = Pin(2, Pin.OUT)
             self.WATER_PUMP_PIN = Pin(4, Pin.OUT)
             self.ANALOG_PIN = ADC(0)
@@ -44,7 +44,7 @@ class Board:
             self.DC_PIN = Pin(22, Pin.OUT)
             self.RST_PIN = Pin(19)
             self.BUSY_PIN = Pin(21, Pin.IN)
-        elif board == PICO_RP2:
+        elif board_name == PICO_RP2:
             self.ON_BOARD_LED_PIN = Pin(25, Pin.OUT)
             self.ANALOG_PIN = ADC(Pin(26))
             raise "Need more config"

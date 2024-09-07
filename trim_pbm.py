@@ -19,9 +19,8 @@ def main():
 
     fbbase = "fb_{0}".format(os.path.basename(sys.argv[1]))
     fbname = os.path.splitext(fbbase)[0]
-    with sys.stdout as fd:
-        f = "{0} = framebuf.FrameBuffer(bytearray({1}), {2}, {3}, framebuf.MONO_HLSB)\n"
-        fd.write(f.format(fbname, str(pbm_data), pbm_dims[0], pbm_dims[1]))
+    with open('out.dat', 'wb') as f:
+        f.write(pbm_data)
 
 
 def usage():
